@@ -1,12 +1,9 @@
-<<<<<<< HEAD
+
 matplotlib==3.8.3
 pandas==2.2.1
-Pillow==10.1.0
-Pillow==10.2.0
+Pillow
+Pillow
 plotly==5.18.0
 seaborn==0.13.2
 streamlit==1.31.1
-~treamlit==1.29.0
-=======
-
->>>>>>> 918c2770e65ea0b11e2f6847fb28a4a6be98456a
+streamlit==1.29.0
