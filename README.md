@@ -15,7 +15,7 @@
   
 **Streamlit Web Application:**
 
-   Develop an intuitive web application using Streamlit, allowing users to Explore the data.
+*  Develop an intuitive web application using Streamlit, allowing users to Explore the data.
 
 **Render Deployment:**
    https://zomato-data-bwca.onrender.com/
