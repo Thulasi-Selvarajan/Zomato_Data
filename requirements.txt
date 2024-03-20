@@ -5,5 +5,6 @@ Pillow
 Pillow
 plotly==5.18.0
 seaborn==0.13.2
+folium==0.12.1
 streamlit
 streamlit
