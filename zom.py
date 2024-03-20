@@ -83,8 +83,8 @@ with tab2:
     with open("india_restaurants_map.html", "r", encoding="utf-8") as f:
         map_html = f.read()
 
-# Display the map in the Streamlit app
-st.components.v1.html(map_html, width=800, height=600)
+    # Display the map in the Streamlit app
+    st.components.v1.html(map_html, width=800, height=600)
    
 
 with tab3:
