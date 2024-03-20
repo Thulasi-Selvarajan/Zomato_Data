@@ -60,7 +60,7 @@ with tab1:
 with tab2:
     
     # Load the Folium map HTML file with explicit encoding
-    with open("india_restaurants_map.html", "r", encoding="utf-8") as f:
+    with open("india_restaurants_map1.html", "r", encoding="utf-8") as f:
         map_html = f.read() 
     #Display the HTML content using st.components.v1.html
     st.components.v1.html(map_html, width=600, height=400) 
@@ -293,7 +293,7 @@ with tab3:
             folium.Marker(location=marker['location'], popup=marker['popup']).add_to(india_map)
 
         # Save the map as HTML
-        india_map.save('india_restaurants_map.html')
+        india_map.save('india_restaurants_map1.html')
    
 
         
