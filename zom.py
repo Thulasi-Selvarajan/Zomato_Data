@@ -58,12 +58,34 @@ with tab1:
     st.write('* Streamlit')
 
 with tab2:
+
+    # Function to filter data for India
+    def filter_data_for_india(data):
+        return data[data['Country'] == 'India']
+
+    # Function to prepare restaurant details for map markers
+    def prepare_marker_details(data):
+        marker_details = []
+        for index, row in data.iterrows():
+            marker = {
+                'location': [row['Latitude'], row['Longitude']],
+                'popup': f"<b>{row['Restaurant Name']}</b><br>"
+                        f"Location: {row['Locality']}, {row['City']}<br>"
+                        f"Cuisine: {row['Cuisines']}<br>"
+                        f"Rating: {row['Aggregate rating']}<br>"
+                        f"Average Cost for Two: {row['Average Cost for two']}<br>"
+                        f"Online Delivery: {'Yes' if row['Has Online delivery'] == 'Yes' else 'No'}"
+            }
+            marker_details.append(marker)
+        return marker_details
     
-    # Load the Folium map HTML file with explicit encoding
-    with open("india_restaurants_map1.html", "r", encoding="utf-8") as f:
-        map_html = f.read() 
-    #Display the HTML content using st.components.v1.html
-    st.components.v1.html(map_html, width=600, height=400) 
+    # Load the HTML file containing the Folium map
+    with open("india_restaurants_map.html", "r", encoding="utf-8") as f:
+        map_html = f.read()
+
+# Display the map in the Streamlit app
+st.components.v1.html(map_html, width=800, height=600)
+   
 
 with tab3:
     # Add a column with rupees as the currency
@@ -208,26 +230,6 @@ with tab3:
         st.write(f"### Rating count in {city}:")
         rating_count = city_data['Aggregate rating'].value_counts()
         st.write(rating_count)
-        
-            # Function to filter data for restaurants in India
-    def filter_data_for_india(data):
-        return data[data['Country'] == 'India']
-
-    # Function to prepare restaurant details for map markers
-    def prepare_marker_details(data):
-        marker_details = []
-        for index, row in data.iterrows():
-            marker = {
-                'location': [row['Latitude'], row['Longitude']],
-                'popup': f"<b>{row['Restaurant Name']}</b><br>"
-                        f"Location: {row['Locality']}, {row['City']}<br>"
-                        f"Cuisine: {row['Cuisines']}<br>"
-                        f"Rating: {row['Aggregate rating']}<br>"
-                        f"Average Cost for Two: {row['Average Cost for two']}"
-                        f"Online Delivery: {'Yes' if row['Has Online delivery'] == 'Yes' else 'No'}"
-            }
-            marker_details.append(marker)
-        return marker_details
     
                 
     # Main function
@@ -249,7 +251,22 @@ with tab3:
         top_countries_plot(data)
 
         online(data)
-         
+
+            # Filter data for India
+        india_data = filter_data_for_india(data)
+
+        # Prepare marker details for India
+        india_marker_details = prepare_marker_details(india_data)
+
+        # Create a Folium Map centered on India
+        india_map = folium.Map(location=[20.5937, 78.9629], zoom_start=5)
+
+        # Add markers for each restaurant in India with popup labels
+        for marker in india_marker_details:
+            folium.Marker(location=marker['location'], popup=marker['popup']).add_to(india_map)
+
+        # Save the map as HTML
+        india_map.save('india_restaurants_map.html')  
          
         # Find costly cuisines in India
         st.write("## Costly cuisines")
@@ -260,8 +277,7 @@ with tab3:
         st.write("## Filter based on the city")
         selected_city = st.selectbox("Select a city:", data['City'].unique())
         city_information(data, selected_city)
-        
-        
+
       
         #selecting country and city
         selected_country, selected_city= choose(data)
@@ -282,21 +298,7 @@ with tab3:
         rating_distribution_plot(filtered_data)
 
         available(filtered_data)
-
-
-       # Create a Folium Map centered on India
-        india_map = folium.Map(location=[20.5937, 78.9629], zoom_start=5)
-
-        # Add markers for each restaurant with popup labels
-        marker_details = prepare_marker_details(data)
-        for marker in marker_details:
-            folium.Marker(location=marker['location'], popup=marker['popup']).add_to(india_map)
-
-        # Save the map as HTML
-        india_map.save('india_restaurants_map1.html')
    
-
-        
 
     if __name__ == "__main__":
      main()
