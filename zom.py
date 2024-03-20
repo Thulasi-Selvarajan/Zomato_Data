@@ -1,9 +1,17 @@
+# Import Streamlit library
 import streamlit as st
+# Import Pandas for data manipulation
 import pandas as pd
+# Import Plotly Express for interactive plots
 import plotly.express as px
+# Import Seaborn for statistical data visualization
 import seaborn as sns
+# Import Matplotlib for basic plotting
 import matplotlib.pyplot as plt
+# Import Image module from PIL for image processing
 from PIL import Image
+# Import Folium for creating interactive maps
+import folium
 
 # Load the data
 @st.cache_resource  # Cache the data to improve performance
@@ -30,7 +38,7 @@ with st.sidebar:
     
 #tabs 
 st.write(":blue[Get Started Here!]")    
-tab1,tab2=st.tabs(['Home','Data Visulization'])
+tab1,tab2,tab3=st.tabs(['Home','Map View','Data Visulization'])
 
 with tab1:
     st.write("")
@@ -48,8 +56,16 @@ with tab1:
     st.write('* Seaborn')
     st.write('* Plotly')
     st.write('* Streamlit')
-    
+
 with tab2:
+    
+    # Load the Folium map HTML file with explicit encoding
+    with open("india_restaurants_map.html", "r", encoding="utf-8") as f:
+        map_html = f.read() 
+    #Display the HTML content using st.components.v1.html
+    st.components.v1.html(map_html, width=600, height=400) 
+
+with tab3:
     # Add a column with rupees as the currency
     def add_rupees_column(data):
         # Define conversion rates for currencies to INR
@@ -109,14 +125,15 @@ with tab2:
 
      # Plot Aggregate rating distribution
     def rating_distribution_plot(data):
-        plt.figure(figsize=(15,6))  # Adjust the figure size as needed
-        sns.countplot(x=data['Aggregate rating'])
-        plt.title('Countplot of Aggregate rating', fontsize=12) 
-        plt.xlabel('Aggregate rating', fontsize=12)  
-        plt.ylabel('Count', fontsize=10)  
-        plt.xticks(fontsize=10)  
-        plt.yticks(fontsize=10)  
-        fig, ax = plt.gcf(), plt.gca()  
+        plt.figure(figsize=(8, 6))  # Adjust the figure size as needed
+        sns.countplot(x=data['Aggregate rating'], hue=data['Aggregate rating'], palette='viridis', legend=False)
+        # Using the 'viridis' colormap
+        plt.title('Countplot of Aggregate rating', fontsize=8)
+        plt.xlabel('Aggregate rating', fontsize=8)
+        plt.ylabel('Count', fontsize=8)
+        plt.xticks(fontsize=8)
+        plt.yticks(fontsize=8)
+        fig, ax = plt.gcf(), plt.gca()
         st.pyplot(fig)
 
    # Function to plot online delivery vs dine-in
@@ -159,6 +176,59 @@ with tab2:
 
         # Show the pie chart
         st.pyplot(fig)
+
+    # Function to find costly cuisines in India
+    def costly_cuisines_in_india(data):
+        # Filter data to include only restaurants in India
+        india_data = data[data['Country'] == 'India']
+        
+        # Group by cuisine and calculate average cost
+        cuisine_avg_cost = india_data.groupby('Cuisines')['Average Cost for two'].mean()
+        
+        # Sort by average cost in descending order
+        costly_cuisines = cuisine_avg_cost.sort_values(ascending=False).head(5)
+        
+        return costly_cuisines
+
+    # Function to display city-based information
+    def city_information(data, city):
+        city_data = data[data['City'] == city]
+        
+        # Display famous cuisines in the city
+        st.write(f"### Famous cuisines in {city}:")
+        famous_cuisines = city_data['Cuisines'].value_counts().head(3)
+        st.write(famous_cuisines)
+        
+        # Display costlier cuisines in the city
+        st.write(f"### Costlier cuisines in {city}:")
+        costlier_cuisines = city_data.groupby('Cuisines')['Average Cost for two'].mean().sort_values(ascending=False).head(3)
+        st.write(costlier_cuisines)
+        
+        # Display rating count in the city
+        st.write(f"### Rating count in {city}:")
+        rating_count = city_data['Aggregate rating'].value_counts()
+        st.write(rating_count)
+        
+            # Function to filter data for restaurants in India
+    def filter_data_for_india(data):
+        return data[data['Country'] == 'India']
+
+    # Function to prepare restaurant details for map markers
+    def prepare_marker_details(data):
+        marker_details = []
+        for index, row in data.iterrows():
+            marker = {
+                'location': [row['Latitude'], row['Longitude']],
+                'popup': f"<b>{row['Restaurant Name']}</b><br>"
+                        f"Location: {row['Locality']}, {row['City']}<br>"
+                        f"Cuisine: {row['Cuisines']}<br>"
+                        f"Rating: {row['Aggregate rating']}<br>"
+                        f"Average Cost for Two: {row['Average Cost for two']}"
+                        f"Online Delivery: {'Yes' if row['Has Online delivery'] == 'Yes' else 'No'}"
+            }
+            marker_details.append(marker)
+        return marker_details
+    
                 
     # Main function
     def main():
@@ -179,7 +249,20 @@ with tab2:
         top_countries_plot(data)
 
         online(data)
-
+         
+         
+        # Find costly cuisines in India
+        st.write("## Costly cuisines")
+        costly_cuisines = costly_cuisines_in_india(data)
+        st.write(costly_cuisines)
+        
+        # Filter based on the city
+        st.write("## Filter based on the city")
+        selected_city = st.selectbox("Select a city:", data['City'].unique())
+        city_information(data, selected_city)
+        
+        
+      
         #selecting country and city
         selected_country, selected_city= choose(data)
 
@@ -199,6 +282,19 @@ with tab2:
         rating_distribution_plot(filtered_data)
 
         available(filtered_data)
+
+
+       # Create a Folium Map centered on India
+        india_map = folium.Map(location=[20.5937, 78.9629], zoom_start=5)
+
+        # Add markers for each restaurant with popup labels
+        marker_details = prepare_marker_details(data)
+        for marker in marker_details:
+            folium.Marker(location=marker['location'], popup=marker['popup']).add_to(india_map)
+
+        # Save the map as HTML
+        india_map.save('india_restaurants_map.html')
+   
 
         
 
