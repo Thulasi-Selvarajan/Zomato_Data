@@ -113,7 +113,8 @@ with tab4:
             'Sri Lankan Rupee(LKR)': 0.37,    # 1 LKR = 0.37 INR
             'Turkish Lira(TL)': 9.83,         # 1 TRY = 9.83 INR
             'Emirati Diram(AED)': 20.20,      # 1 AED = 20.20 INR
-            'Pounds(£)': 101.82               # 1 GBP = 101.82 INR
+            'Pounds(£)': 101.82,               # 1 GBP = 101.82 INR
+            'Indian Rupees(Rs.)': 1            # 1 INR = 1 INR (Base currency)
             # Add more conversion rates as needed
     }
 
