@@ -38,7 +38,7 @@ with st.sidebar:
     
 #tabs 
 st.write(":blue[Get Started Here!]")    
-tab1,tab2,tab3=st.tabs(['Home','Map View','Data Visulization'])
+tab1,tab2,tab3,tab4=st.tabs(['Home','Map View','PowerBi Dashboard','Data Visulization'])
 
 with tab1:
     st.write("")
@@ -85,18 +85,38 @@ with tab2:
 
     # Display the map in the Streamlit app
     st.components.v1.html(map_html, width=800, height=600)
+    
+#PowerBi
+with tab3:
+    #powerbi Dashboard SS insertion
+    image_path = (r"img.png")   
+    image = Image.open(image_path)
+
+    # Display the image using st.image()
+    st.image(image)
+
+
    
 
-with tab3:
+with tab4:
     # Add a column with rupees as the currency
     def add_rupees_column(data):
-        # Define conversion rates for currencies to INR
+    # Define conversion rates for currencies to INR
         conversion_rates = {
-            'Dollar($)': 74.26,        # 1 USD = 74.26 INR
-            'Brazilian Real(R$)': 13.12,    # 1 BRL = 13.12 INR
-            'NewZealand($)': 50.85,    # 1 NZD = 50.85 INR
+            'Dollar($)': 74.26,              # 1 USD = 74.26 INR
+            'Brazilian Real(R$)': 13.12,      # 1 BRL = 13.12 INR
+            'NewZealand($)': 50.85,          # 1 NZD = 50.85 INR
+            'Indonesian Rupiah(IDR)': 0.0053, # 1 IDR = 0.0053 INR
+            'Botswana Pula(P)': 6.36,         # 1 BWP = 6.36 INR
+            'Qatari Rial(QR)': 20.35,         # 1 QAR = 20.35 INR
+            'Rand(R)': 4.92,                  # 1 ZAR = 4.92 INR
+            'Sri Lankan Rupee(LKR)': 0.37,    # 1 LKR = 0.37 INR
+            'Turkish Lira(TL)': 9.83,         # 1 TRY = 9.83 INR
+            'Emirati Diram(AED)': 20.20,      # 1 AED = 20.20 INR
+            'Pounds(£)': 101.82               # 1 GBP = 101.82 INR
             # Add more conversion rates as needed
-        }
+    }
+
         
         # Map currencies to conversion rates
         data['Conversion Rate'] = data['Currency'].map(conversion_rates)
